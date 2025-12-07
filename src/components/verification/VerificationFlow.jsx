@@ -1,0 +1,64 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import CitizenForm from './CitizenForm';
+import IdUpload from './IdUpload';
+import FaceAuth from './FaceAuth';
+
+const VerificationFlow = () => {
+    const navigate = useNavigate();
+    const [step, setStep] = useState(1);
+    const [data, setData] = useState({
+        idNumber: '',
+        dob: '',
+        idFront: null,
+        idBack: null
+    });
+
+    const updateData = (newData) => {
+        setData(prev => ({ ...prev, ...newData }));
+    };
+
+    const nextStep = () => setStep(s => s + 1);
+
+    const handleComplete = () => {
+        // In a real app, we would verify everything one last time here
+        // For now, we set a flag in localStorage to simulate session
+        localStorage.setItem('isVerified', 'true');
+        navigate('/vote');
+    };
+
+    return (
+        <div className="min-h-[80vh] flex flex-col items-center justify-center py-12">
+            {/* Progress Steps */}
+            <div className="flex items-center gap-4 mb-12">
+                {[1, 2, 3].map((s) => (
+                    <div key={s} className="flex items-center gap-2">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all
+              ${step >= s ? 'bg-primary text-black shadow-[0_0_15px_rgba(0,242,255,0.5)]' : 'bg-white/10 text-gray-500'}
+            `}>
+                            {s}
+                        </div>
+                        {s < 3 && <div className={`w-12 h-0.5 ${step > s ? 'bg-primary' : 'bg-white/10'}`} />}
+                    </div>
+                ))}
+            </div>
+
+            <div className="w-full max-w-2xl p-8 rounded-3xl glass-panel relative overflow-hidden">
+                <AnimatePresence mode="wait">
+                    {step === 1 && (
+                        <CitizenForm key="step1" onComplete={nextStep} data={data} updateData={updateData} />
+                    )}
+                    {step === 2 && (
+                        <IdUpload key="step2" onComplete={nextStep} updateData={updateData} />
+                    )}
+                    {step === 3 && (
+                        <FaceAuth key="step3" onComplete={handleComplete} />
+                    )}
+                </AnimatePresence>
+            </div>
+        </div>
+    );
+};
+
+export default VerificationFlow;
