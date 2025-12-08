@@ -14,6 +14,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 const citizen = {
+    name: 'Nurbu Sherpa',
     idNumber: '1011-1011',
     gender: 'Male',
     dob: '2001-01-01',
@@ -23,16 +24,27 @@ const citizen = {
     status: 'verified' // Auto-verify administrative additions
 };
 
-const sql = `INSERT INTO citizens (idNumber, gender, dob, dobBS, idFrontPath, idBackPath, status) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-const params = [citizen.idNumber, citizen.gender, citizen.dob, citizen.dobBS, citizen.idFrontPath, citizen.idBackPath, citizen.status];
+const sql = `INSERT INTO citizens (name, idNumber, gender, dob, dobBS, idFrontPath, idBackPath, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+const params = [citizen.name, citizen.idNumber, citizen.gender, citizen.dob, citizen.dobBS, citizen.idFrontPath, citizen.idBackPath, citizen.status];
 
-db.run(sql, params, function (err) {
-    if (err) {
-        console.error("Error inserting citizen:", err.message);
-    } else {
-        console.log(`Citizen added with ID: ${this.lastID}`);
-        console.log(`Name: Nurbu Sherpa (Credentials)`);
-        console.log(`ID Number: ${citizen.idNumber}`);
-    }
-    db.close();
+db.serialize(() => {
+    // Ensure column exists (handling race condition with db.js startup)
+    db.run("ALTER TABLE citizens ADD COLUMN name TEXT", (err) => {
+        // Only log real errors, ignore "duplicate column name"
+        if (err && !err.message.includes("duplicate column name")) {
+            console.log("Migration note:", err.message);
+        }
+    });
+
+    db.run(sql, params, function (err) {
+        if (err) {
+            console.error("Error inserting citizen:", err.message);
+        } else {
+            console.log(`Citizen added with ID: ${this.lastID}`);
+            console.log(`Name: ${citizen.name} (Credentials)`);
+            console.log(`ID Number: ${citizen.idNumber}`);
+        }
+    });
 });
+
+db.close();

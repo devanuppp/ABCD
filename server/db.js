@@ -14,6 +14,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
         console.log('Connected to the SQLite database.');
         db.run(`CREATE TABLE IF NOT EXISTS citizens (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
             idNumber TEXT,
             gender TEXT,
             dob TEXT,
@@ -28,6 +29,9 @@ const db = new sqlite3.Database(dbPath, (err) => {
             } else {
                 // Migration for existing table
                 db.run("ALTER TABLE citizens ADD COLUMN gender TEXT", (err) => {
+                    // Ignore error if column exists
+                });
+                db.run("ALTER TABLE citizens ADD COLUMN name TEXT", (err) => {
                     // Ignore error if column exists
                 });
             }

@@ -64,11 +64,11 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
                 setErrors({});
                 onComplete();
             } else {
-                setErrors({ general: "You are not allowed to vote" });
+                setErrors({ general: result.error || "You are not allowed to vote" });
             }
         } catch (error) {
             console.error("Verification error:", error);
-            setErrors({ general: "You are not allowed to vote" });
+            setErrors({ general: "Connection failed. Please try again." });
         }
     };
 

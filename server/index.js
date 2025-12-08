@@ -40,7 +40,7 @@ const upload = multer({ storage: storage });
 // Routes
 app.post('/api/register', upload.fields([{ name: 'idFront', maxCount: 1 }, { name: 'idBack', maxCount: 1 }]), (req, res) => {
     try {
-        const { idNumber, dob, dobBS } = req.body;
+        const { name, idNumber, dob, dobBS } = req.body;
         const idFrontPath = req.files['idFront'] ? req.files['idFront'][0].filename : null;
         const idBackPath = req.files['idBack'] ? req.files['idBack'][0].filename : null;
 
@@ -48,8 +48,8 @@ app.post('/api/register', upload.fields([{ name: 'idFront', maxCount: 1 }, { nam
             return res.status(400).json({ error: "Both ID images are required" });
         }
 
-        const sql = `INSERT INTO citizens (idNumber, dob, dobBS, idFrontPath, idBackPath) VALUES (?, ?, ?, ?, ?)`;
-        const params = [idNumber, dob, dobBS, idFrontPath, idBackPath];
+        const sql = `INSERT INTO citizens (name, idNumber, dob, dobBS, idFrontPath, idBackPath) VALUES (?, ?, ?, ?, ?, ?)`;
+        const params = [name, idNumber, dob, dobBS, idFrontPath, idBackPath];
 
         db.run(sql, params, function (err) {
             if (err) {
@@ -60,6 +60,7 @@ app.post('/api/register', upload.fields([{ name: 'idFront', maxCount: 1 }, { nam
                 message: "Registration successful",
                 data: {
                     id: this.lastID,
+                    name,
                     idNumber,
                     dob
                 }
@@ -224,8 +225,10 @@ app.post('/api/verify', upload.fields([
             }
 
             // Check Images
-            const frontMatch = imagesMatch(idFrontFile.path, join(uploadsDir, citizen.idFrontPath));
-            const backMatch = imagesMatch(idBackFile.path, join(uploadsDir, citizen.idBackPath));
+            // Check Images
+            // Use strict=false (relaxed) for demo to allow slightly different images/compressions to pass
+            const frontMatch = imagesMatch(idFrontFile.path, join(uploadsDir, citizen.idFrontPath), false);
+            const backMatch = imagesMatch(idBackFile.path, join(uploadsDir, citizen.idBackPath), false);
 
             if (!frontMatch) {
                 return res.json({ verified: false, error: "ID Front verification failed. Image does not match profile." });
@@ -259,7 +262,7 @@ app.post('/api/verify', upload.fields([
             res.json({
                 verified: true,
                 message: "Verification Successful! Face and Data Matched.",
-                citizen: { name: "Nurbu Sherpa (Verified)", id: citizen.id }
+                citizen: { name: citizen.name || "Verified Citizen", id: citizen.id }
             });
         });
 
