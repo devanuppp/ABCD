@@ -16,6 +16,11 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
             newErrors.idNumber = 'Citizenship ID can only contain numbers, hyphens (-), and slashes (/)';
         }
 
+        // Validate Gender
+        if (!data.gender) {
+            newErrors.gender = 'Please select your gender';
+        }
+
         // Validate DOB (Age 18+)
         if (!data.dob) {
             newErrors.dob = 'English Date (AD) is required';
@@ -80,6 +85,34 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
                     />
                     {errors.idNumber && (
                         <p className="text-sm text-red-500 mt-1">{errors.idNumber}</p>
+                    )}
+
+                </div>
+
+                {/* Gender Selection */}
+                <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-300">Gender</label>
+                    <select
+                        value={data.gender}
+                        onChange={(e) => {
+                            updateData({ gender: e.target.value });
+                            if (errors.gender) setErrors({ ...errors, gender: null });
+                        }}
+                        className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.gender
+                            ? 'border-red-500 focus:border-red-500'
+                            : 'border-white/10 focus:border-primary'
+                            } focus:ring-1 ${errors.gender
+                                ? 'focus:ring-red-500'
+                                : 'focus:ring-primary'
+                            } outline-none transition-all text-white [&>option]:bg-gray-900`}
+                    >
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    {errors.gender && (
+                        <p className="text-sm text-red-500 mt-1">{errors.gender}</p>
                     )}
                 </div>
 

@@ -120,7 +120,7 @@ const imagesMatch = (path1, path2) => {
 
 app.post('/api/verify', upload.fields([{ name: 'idFront', maxCount: 1 }, { name: 'idBack', maxCount: 1 }]), (req, res) => {
     try {
-        const { idNumber, dob } = req.body;
+        const { idNumber, dob, gender } = req.body;
         const idFrontFile = req.files['idFront'] ? req.files['idFront'][0] : null;
         const idBackFile = req.files['idBack'] ? req.files['idBack'][0] : null;
 
@@ -133,6 +133,12 @@ app.post('/api/verify', upload.fields([{ name: 'idFront', maxCount: 1 }, { name:
 
             if (!citizen) {
                 return res.status(404).json({ error: "Citizen not found", verified: false });
+            }
+
+
+            // Check Gender
+            if (gender && citizen.gender && citizen.gender.toLowerCase() !== gender.toLowerCase()) {
+                return res.status(400).json({ error: "Gender does not match records", verified: false });
             }
 
             // Check DOB

@@ -15,6 +15,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
 
 const citizen = {
     idNumber: '1011-1011',
+    gender: 'Male',
     dob: '2001-01-01',
     dobBS: '2057-09-17', // Based on calculation or user input requirement
     idFrontPath: 'nurbu_front.jpg',
@@ -22,8 +23,8 @@ const citizen = {
     status: 'verified' // Auto-verify administrative additions
 };
 
-const sql = `INSERT INTO citizens (idNumber, dob, dobBS, idFrontPath, idBackPath, status) VALUES (?, ?, ?, ?, ?, ?)`;
-const params = [citizen.idNumber, citizen.dob, citizen.dobBS, citizen.idFrontPath, citizen.idBackPath, citizen.status];
+const sql = `INSERT INTO citizens (idNumber, gender, dob, dobBS, idFrontPath, idBackPath, status) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+const params = [citizen.idNumber, citizen.gender, citizen.dob, citizen.dobBS, citizen.idFrontPath, citizen.idBackPath, citizen.status];
 
 db.run(sql, params, function (err) {
     if (err) {

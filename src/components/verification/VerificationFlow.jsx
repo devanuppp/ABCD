@@ -10,6 +10,7 @@ const VerificationFlow = () => {
     const [step, setStep] = useState(1);
     const [data, setData] = useState({
         idNumber: '',
+        gender: '',
         dob: '',
         dobBS: '',
         idFront: null,
@@ -28,6 +29,7 @@ const VerificationFlow = () => {
         try {
             const formData = new FormData();
             formData.append('idNumber', data.idNumber);
+            formData.append('gender', data.gender);
             formData.append('dob', data.dob);
             formData.append('dobBS', data.dobBS);
             if (data.idFront) formData.append('idFront', data.idFront);
