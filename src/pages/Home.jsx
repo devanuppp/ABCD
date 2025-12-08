@@ -5,6 +5,7 @@ import { ArrowRight, Lock, Fingerprint, CheckCircle, Shield, Eye, Zap, Server, C
 
 const Home = () => {
     const [expandedCard, setExpandedCard] = useState(null);
+    const cardRefs = React.useRef([]);
 
     const features = [
         {
@@ -48,6 +49,18 @@ const Home = () => {
     const toggleCard = (idx) => {
         setExpandedCard(expandedCard === idx ? null : idx);
     };
+
+    React.useEffect(() => {
+        if (expandedCard !== null && cardRefs.current[expandedCard]) {
+            setTimeout(() => {
+                cardRefs.current[expandedCard].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                    inline: 'center'
+                });
+            }, 300); // Delay to allow layout animation to start/complete for accurate positioning
+        }
+    }, [expandedCard]);
 
     return (
         <div className="flex flex-col items-center justify-center min-h-[80vh] text-center">
@@ -99,74 +112,96 @@ const Home = () => {
             </motion.div>
 
             <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5, duration: 1 }}
+                layout
                 className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl"
             >
                 {features.map((feature, idx) => (
                     <motion.div
                         key={idx}
-                        layout
+                        ref={el => cardRefs.current[idx] = el}
+                        layout="position"
                         onClick={() => toggleCard(idx)}
-                        className={`p-6 rounded-2xl glass-panel text-left cursor-pointer transition-all duration-300 ${expandedCard === idx
-                            ? 'md:col-span-3 border-2 border-primary/50 shadow-lg shadow-primary/20'
-                            : 'hover:border-primary/30'
+                        className={`group relative p-6 rounded-2xl glass-panel text-left cursor-pointer overflow-hidden transition-colors duration-500
+                            ${expandedCard === idx
+                                ? 'md:col-span-3 bg-white/5 border-primary/50 shadow-2xl shadow-primary/10'
+                                : 'hover:bg-white/5 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5'
                             }`}
-                        whileHover={{ scale: expandedCard === idx ? 1 : 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                        transition={{
+                            layout: { duration: 0.6, type: "spring", bounce: 0, stiffness: 100, damping: 20 }
+                        }}
                     >
-                        <div className="flex items-start gap-4">
+                        {/* Smooth Background Gradient Fade */}
+                        <div
+                            className={`absolute inset-0 bg-gradient-to-br ${feature.color} transition-opacity duration-700 ease-out
+                            ${expandedCard === idx ? 'opacity-10' : 'opacity-0 group-hover:opacity-5'}`}
+                        />
+
+                        <div className="relative z-10 flex items-start gap-4">
                             <motion.div
-                                animate={{
-                                    rotate: expandedCard === idx ? 360 : 0,
-                                    scale: expandedCard === idx ? 1.2 : 1
-                                }}
-                                transition={{ duration: 0.5 }}
+                                layout
+                                className={`p-3 rounded-xl transition-colors duration-500
+                                    ${expandedCard === idx ? 'bg-primary/20' : 'bg-white/5 group-hover:bg-primary/10'}`}
                             >
-                                <feature.icon className={`w-10 h-10 ${expandedCard === idx ? `text-transparent bg-clip-text bg-gradient-to-r ${feature.color}` : 'text-primary'}`} />
+                                <feature.icon
+                                    className={`w-8 h-8 transition-colors duration-500
+                                    ${expandedCard === idx
+                                            ? `text-white`
+                                            : 'text-primary group-hover:text-blue-300'}`}
+                                />
                             </motion.div>
+
                             <div className="flex-1">
-                                <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                                <p className="text-gray-400">{feature.desc}</p>
+                                <motion.h3 layout="position" className="text-xl font-bold mb-2 text-white">
+                                    {feature.title}
+                                </motion.h3>
+                                <motion.p layout="position" className="text-gray-400 leading-relaxed text-sm">
+                                    {feature.desc}
+                                </motion.p>
                             </div>
                         </div>
 
-                        <AnimatePresence>
+                        <AnimatePresence mode="popLayout">
                             {expandedCard === idx && (
                                 <motion.div
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: 'auto' }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    transition={{ duration: 0.4, ease: 'easeInOut' }}
-                                    className="overflow-hidden"
+                                    transition={{ duration: 0.5, ease: [0.04, 0.62, 0.23, 0.98] }}
                                 >
-                                    <div className="mt-6 pt-6 border-t border-white/10">
-                                        <h4 className="text-lg font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-                                            Technical Details
-                                        </h4>
+                                    <div className="mt-8 pt-6 border-t border-white/10">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <h4 className="text-xs font-bold uppercase tracking-[0.2em] text-gray-500">
+                                                Key Features
+                                            </h4>
+                                            <span className={`text-xs font-bold px-3 py-1 rounded-full bg-gradient-to-r ${feature.color} text-white bg-opacity-20`}>
+                                                Verified
+                                            </span>
+                                        </div>
+
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             {feature.details.map((detail, detailIdx) => (
                                                 <motion.div
                                                     key={detailIdx}
-                                                    initial={{ opacity: 0, x: -20 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    transition={{ delay: detailIdx * 0.1, duration: 0.3 }}
-                                                    className="flex items-center gap-3 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                                                    initial={{ opacity: 0, y: 20 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ delay: detailIdx * 0.1 + 0.1, duration: 0.5, ease: "easeOut" }}
+                                                    className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/5 hover:border-white/20 transition-all duration-300"
                                                 >
-                                                    <detail.icon className={`w-5 h-5 text-transparent bg-clip-text bg-gradient-to-r ${feature.color}`} />
-                                                    <span className="text-sm text-gray-300">{detail.text}</span>
+                                                    <detail.icon className={`w-5 h-5 text-gray-400`} />
+                                                    <span className="text-sm text-gray-200">{detail.text}</span>
                                                 </motion.div>
                                             ))}
                                         </div>
+
                                         <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: 0.4, duration: 0.3 }}
-                                            className="mt-4 text-center"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ delay: 0.5, duration: 0.5 }}
+                                            className="mt-8 flex justify-end"
                                         >
-                                            <button className={`px-6 py-2 rounded-lg bg-gradient-to-r ${feature.color} text-white font-semibold hover:shadow-lg hover:shadow-primary/30 transition-all`}>
-                                                Learn More
+                                            <button className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2 group/btn">
+                                                Learn technical specifications
+                                                <ArrowRight className="w-4 h-4 transform group-hover/btn:translate-x-1 transition-transform" />
                                             </button>
                                         </motion.div>
                                     </div>

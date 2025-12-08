@@ -13,10 +13,10 @@ const Navbar = () => {
                         className="h-16 w-auto object-contain drop-shadow-md"
                     />
                     <div className="flex flex-col justify-center">
-                        <h1 className="text-lg font-bold leading-none text-white tracking-wide uppercase drop-shadow-sm">
+                        <h1 className="text-xl font-bold leading-none text-white tracking-wide uppercase drop-shadow-sm">
                             Election Commission Board
                         </h1>
-                        <p className="text-sm text-blue-400 font-semibold tracking-wider uppercase mt-1">
+                        <p className="text-sm text-blue-400 font-semibold tracking-widest uppercase mt-1">
                             Texas College
                         </p>
                     </div>
