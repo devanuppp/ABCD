@@ -25,7 +25,7 @@ const VerificationFlow = () => {
 
     const nextStep = () => setStep(s => s + 1);
 
-    const handleComplete = async () => {
+    const handleComplete = async (faceBlob) => {
         try {
             const formData = new FormData();
             formData.append('idNumber', data.idNumber);
@@ -34,6 +34,7 @@ const VerificationFlow = () => {
             formData.append('dobBS', data.dobBS);
             if (data.idFront) formData.append('idFront', data.idFront);
             if (data.idBack) formData.append('idBack', data.idBack);
+            if (faceBlob) formData.append('faceImage', faceBlob, 'face.jpg');
 
             const response = await fetch('http://localhost:3000/api/verify', {
                 method: 'POST',
@@ -48,12 +49,12 @@ const VerificationFlow = () => {
                 navigate('/vote');
             } else {
                 console.error("Verification Failed:", result.error);
-                alert(`Verification Failed: ${result.error || "Credentials do not match."}`);
-                localStorage.removeItem('isVerified');
+                // Throw error so FaceAuth catches it
+                throw new Error(result.error || "Credentials do not match.");
             }
         } catch (error) {
             console.error("Network Error:", error);
-            alert("Network Error. Ensure backend is running.");
+            throw error;
         }
     };
 

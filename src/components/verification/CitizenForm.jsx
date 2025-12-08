@@ -5,7 +5,7 @@ import NepaliDate from 'nepali-date-converter';
 const CitizenForm = ({ onComplete, data, updateData }) => {
     const [errors, setErrors] = useState({});
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const newErrors = {};
 
@@ -46,8 +46,30 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
             return;
         }
 
-        setErrors({});
-        onComplete();
+        // Backend Verification
+        try {
+            const response = await fetch('http://localhost:3000/api/verify-citizen', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    idNumber: data.idNumber,
+                    dob: data.dob,
+                    gender: data.gender
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                setErrors({});
+                onComplete();
+            } else {
+                setErrors({ general: "You are not allowed to vote" });
+            }
+        } catch (error) {
+            console.error("Verification error:", error);
+            setErrors({ general: "You are not allowed to vote" });
+        }
     };
 
     return (
@@ -59,6 +81,12 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
         >
             <h2 className="text-3xl font-bold mb-2">Identity Verification</h2>
             <p className="text-gray-400 mb-8">Please enter your citizenship details and verify your phone number.</p>
+
+            {errors.general && (
+                <div className="bg-red-500/10 border border-red-500/50 p-3 rounded-lg text-red-400 text-sm py-4 mb-4">
+                    {errors.general}
+                </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Citizenship ID */}
@@ -77,10 +105,10 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
                         placeholder="XX-XX-XX-XXXXX"
                         className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.idNumber
                             ? 'border-red-500 focus:border-red-500'
-                            : 'border-white/10 focus:border-primary'
+                            : 'border-white/10 focus:border-emerald-500' // Changed focus color
                             } focus:ring-1 ${errors.idNumber
                                 ? 'focus:ring-red-500'
-                                : 'focus:ring-primary'
+                                : 'focus:ring-emerald-500' // Changed focus color
                             } outline-none transition-all`}
                     />
                     {errors.idNumber && (
@@ -100,10 +128,10 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
                         }}
                         className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.gender
                             ? 'border-red-500 focus:border-red-500'
-                            : 'border-white/10 focus:border-primary'
+                            : 'border-white/10 focus:border-emerald-500'
                             } focus:ring-1 ${errors.gender
                                 ? 'focus:ring-red-500'
-                                : 'focus:ring-primary'
+                                : 'focus:ring-emerald-500'
                             } outline-none transition-all text-white [&>option]:bg-gray-900`}
                     >
                         <option value="">Select Gender</option>
@@ -141,10 +169,10 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
                             }}
                             className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.dob
                                 ? 'border-red-500 focus:border-red-500'
-                                : 'border-white/10 focus:border-primary'
+                                : 'border-white/10 focus:border-emerald-500'
                                 } focus:ring-1 ${errors.dob
                                     ? 'focus:ring-red-500'
-                                    : 'focus:ring-primary'
+                                    : 'focus:ring-emerald-500'
                                 } outline-none transition-all text-white`}
                         />
                         {errors.dob && (
@@ -177,10 +205,10 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
                             placeholder="YYYY-MM-DD"
                             className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.dobBS
                                 ? 'border-red-500 focus:border-red-500'
-                                : 'border-white/10 focus:border-primary'
+                                : 'border-white/10 focus:border-emerald-500'
                                 } focus:ring-1 ${errors.dobBS
                                     ? 'focus:ring-red-500'
-                                    : 'focus:ring-primary'
+                                    : 'focus:ring-emerald-500'
                                 } outline-none transition-all text-white`}
                         />
                         {errors.dobBS && (
@@ -194,7 +222,7 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
                 {/* Continue Button */}
                 <button
                     type="submit"
-                    className="w-full py-4 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/50"
+                    className="w-full py-4 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition-all hover:shadow-lg hover:shadow-emerald-500/20"
                 >
                     Continue
                 </button>

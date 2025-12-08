@@ -34,11 +34,29 @@ const FaceAuth = ({ onComplete }) => {
     const startScan = async () => {
         if (cameraError) return;
         setStatus('scanning');
-        // Simulate scanning process
-        await new Promise(r => setTimeout(r, 3000));
-        setStatus('success');
-        await new Promise(r => setTimeout(r, 1000));
-        onComplete();
+
+        // Capture Image
+        let blob = null;
+        if (videoRef.current) {
+            const canvas = document.createElement('canvas');
+            canvas.width = videoRef.current.videoWidth;
+            canvas.height = videoRef.current.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(videoRef.current, 0, 0);
+            blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
+        }
+
+        // Simulate scanning visual delay
+        await new Promise(r => setTimeout(r, 2000));
+
+        try {
+            await onComplete(blob);
+            setStatus('success');
+        } catch (error) {
+            console.error("Face verify failed", error);
+            setStatus('idle'); // or failed state
+            alert(error.message || "Verification Failed");
+        }
     };
 
     return (
@@ -110,7 +128,7 @@ const FaceAuth = ({ onComplete }) => {
                 onClick={startScan}
                 disabled={status === 'scanning' || status === 'success' || !!cameraError}
                 className={`w-full py-4 font-bold rounded-lg transition-all flex items-center justify-center gap-2
-          ${(status === 'scanning' || !!cameraError) ? 'bg-white/10 text-gray-400 cursor-not-allowed' : 'bg-primary text-black hover:bg-primary/90'}
+          ${(status === 'scanning' || !!cameraError) ? 'bg-white/10 text-gray-400 cursor-not-allowed' : 'bg-emerald-600 text-white hover:bg-emerald-700'}
         `}
             >
                 {status === 'idle' && <><Camera className="w-5 h-5" /> Start Face Scan</>}

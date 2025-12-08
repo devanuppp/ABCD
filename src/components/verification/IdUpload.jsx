@@ -84,7 +84,7 @@ const IdUpload = ({ onComplete, updateData }) => {
                 onClick={handleContinue}
                 disabled={!front || !back || isVerifying}
                 className={`w-full py-4 mt-8 font-bold rounded-lg transition-all flex items-center justify-center gap-2
-          ${!front || !back ? 'bg-white/10 text-gray-500 cursor-not-allowed' : 'bg-primary text-black hover:bg-primary/90'}
+          ${!front || !back ? 'bg-white/10 text-gray-500 cursor-not-allowed' : 'bg-emerald-600 text-white hover:bg-emerald-700'}
         `}
             >
                 {isVerifying ? (
