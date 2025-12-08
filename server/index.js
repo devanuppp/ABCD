@@ -155,6 +155,22 @@ const imagesMatch = (path1, path2, isStrict = true) => {
     }
 };
 
+
+// Helper for loose date comparison
+const areDatesEqual = (d1, d2) => {
+    try {
+        const date1 = new Date(d1);
+        const date2 = new Date(d2);
+        // Check if both are valid dates
+        if (isNaN(date1.getTime()) || isNaN(date2.getTime())) return false;
+        // Compare time values (ignoring time of day if necessary, but here we assume dates only)
+        // To be safe, let's compare YYYY-MM-DD strings derived from the objects
+        return date1.toISOString().split('T')[0] === date2.toISOString().split('T')[0];
+    } catch (e) {
+        return false;
+    }
+};
+
 app.post('/api/verify-citizen', (req, res) => {
     const { idNumber, dob, gender } = req.body;
 
@@ -175,11 +191,9 @@ app.post('/api/verify-citizen', (req, res) => {
             return res.status(400).json({ error: "Gender provided does not match our records." });
         }
 
-        // Check DOB
-        // Note: In a real app we might need to normalize date formats. 
-        // Here we assume exact string match as stored in DB.
-        if (citizen.dob !== dob) {
-            return res.status(400).json({ error: "Date of Birth does not match our records." });
+        // Check DOB (Flexible)
+        if (!areDatesEqual(citizen.dob, dob)) {
+            return res.status(400).json({ error: `Date of Birth does not match our records.` });
         }
 
         // If we get here, basic details match
@@ -219,8 +233,8 @@ app.post('/api/verify', upload.fields([
                 return res.status(400).json({ error: "Gender does not match records", verified: false });
             }
 
-            // Check DOB
-            if (citizen.dob !== dob) {
+            // Check DOB (Flexible)
+            if (!areDatesEqual(citizen.dob, dob)) {
                 return res.status(400).json({ error: "Date of Birth does not match", verified: false });
             }
 

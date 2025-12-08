@@ -17,8 +17,8 @@ const citizen = {
     name: 'Nurbu Sherpa',
     idNumber: '1011-1011',
     gender: 'Male',
-    dob: '2001-01-01',
-    dobBS: '2057-09-17', // Based on calculation or user input requirement
+    dob: '2003-04-13',
+    dobBS: '2060-01-01', // Based on calculation or user input requirement
     idFrontPath: 'nurbu_front.jpg',
     idBackPath: 'nurbu_back.jpg',
     status: 'verified' // Auto-verify administrative additions
