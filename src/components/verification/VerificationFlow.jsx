@@ -33,19 +33,21 @@ const VerificationFlow = () => {
             if (data.idFront) formData.append('idFront', data.idFront);
             if (data.idBack) formData.append('idBack', data.idBack);
 
-            const response = await fetch('http://localhost:3000/api/register', {
+            const response = await fetch('http://localhost:3000/api/verify', {
                 method: 'POST',
                 body: formData
             });
 
-            if (response.ok) {
-                const result = await response.json();
-                console.log("Registration Success:", result);
+            const result = await response.json();
+
+            if (response.ok && result.verified) {
+                console.log("Verification Success:", result);
                 localStorage.setItem('isVerified', 'true');
                 navigate('/vote');
             } else {
-                console.error("Registration Failed");
-                alert("Registration Failed. Please try again.");
+                console.error("Verification Failed:", result.error);
+                alert(`Verification Failed: ${result.error || "Credentials do not match."}`);
+                localStorage.removeItem('isVerified');
             }
         } catch (error) {
             console.error("Network Error:", error);
