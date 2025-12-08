@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Lock, Fingerprint, CheckCircle, Shield, Eye, Zap, Server, Cpu, Database, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Lock, Fingerprint, CheckCircle, Shield, Eye, Zap, Server, Cpu, Database, ShieldCheck, X, Globe, Users, TrendingUp, Award } from 'lucide-react';
 
 const Home = () => {
     const [expandedCard, setExpandedCard] = useState(null);
+    const [showLearnMore, setShowLearnMore] = useState(false);
     const cardRefs = React.useRef([]);
 
     const features = [
@@ -64,17 +65,6 @@ const Home = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-[80vh] text-center">
-            {/* Secure System Badge - Top Right Corner */}
-            <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-                className="fixed top-6 right-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 hover:border-green-500/50 transition-all"
-            >
-                <ShieldCheck className="w-4 h-4 text-green-500" />
-                <span className="text-sm font-medium text-gray-200">Secure System</span>
-            </motion.div>
-
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -105,7 +95,10 @@ const Home = () => {
                         </span>
                     </Link>
 
-                    <button className="px-8 py-4 rounded-lg border border-white/10 hover:bg-white/5 transition-colors text-gray-300">
+                    <button
+                        onClick={() => setShowLearnMore(true)}
+                        className="px-8 py-4 rounded-lg border border-white/10 hover:bg-white/5 transition-colors text-gray-300"
+                    >
                         Learn More
                     </button>
                 </div>
@@ -211,6 +204,242 @@ const Home = () => {
                     </motion.div>
                 ))}
             </motion.div>
+
+            {/* Learn More Modal */}
+            <AnimatePresence>
+                {showLearnMore && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+                        onClick={() => setShowLearnMore(false)}
+                    >
+                        {/* Backdrop with blur */}
+                        <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
+
+                        {/* Modal Content */}
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            transition={{
+                                type: "spring",
+                                damping: 25,
+                                stiffness: 300,
+                                duration: 0.5
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-3xl border border-white/10 shadow-2xl"
+                        >
+                            {/* Close Button */}
+                            <motion.button
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.2 }}
+                                onClick={() => setShowLearnMore(false)}
+                                className="absolute top-6 right-6 z-10 p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all group"
+                            >
+                                <X className="w-6 h-6 text-gray-400 group-hover:text-white transition-colors" />
+                            </motion.button>
+
+                            {/* Decorative Background Gradient */}
+                            <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-3xl opacity-30" />
+                            <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-purple-500/20 to-pink-500/20 rounded-full blur-3xl opacity-30" />
+
+                            <div className="relative p-8 md:p-12">
+                                {/* Header */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.1, duration: 0.6 }}
+                                    className="mb-8"
+                                >
+                                    <h2 className="text-4xl md:text-5xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                                        About VoteSecure
+                                    </h2>
+                                    <p className="text-xl text-gray-300 leading-relaxed">
+                                        The world's most advanced electronic voting platform
+                                    </p>
+                                </motion.div>
+
+                                {/* Main Description */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.2, duration: 0.6 }}
+                                    className="mb-10 p-6 rounded-2xl bg-white/5 border border-white/10"
+                                >
+                                    <h3 className="text-2xl font-bold mb-4 text-white flex items-center gap-3">
+                                        <Globe className="w-6 h-6 text-primary" />
+                                        Our Mission
+                                    </h3>
+                                    <p className="text-gray-300 leading-relaxed mb-4">
+                                        VoteSecure revolutionizes democratic participation by combining cutting-edge biometric authentication,
+                                        blockchain technology, and military-grade encryption to create the most secure, transparent, and
+                                        accessible voting platform ever built.
+                                    </p>
+                                    <p className="text-gray-300 leading-relaxed">
+                                        We believe that every citizen deserves a voting experience that is not only secure and verifiable,
+                                        but also intuitive and accessible from anywhere in the world.
+                                    </p>
+                                </motion.div>
+
+                                {/* Key Features Grid */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.3, duration: 0.6 }}
+                                    className="mb-10"
+                                >
+                                    <h3 className="text-2xl font-bold mb-6 text-white">Core Features</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {[
+                                            {
+                                                icon: Lock,
+                                                title: "End-to-End Encryption",
+                                                desc: "Military-grade AES-256 encryption protects every vote from submission to final count"
+                                            },
+                                            {
+                                                icon: Fingerprint,
+                                                title: "Biometric Verification",
+                                                desc: "Advanced facial recognition with liveness detection ensures only verified citizens can vote"
+                                            },
+                                            {
+                                                icon: Shield,
+                                                title: "Blockchain Integrity",
+                                                desc: "Immutable distributed ledger creates an unalterable audit trail for complete transparency"
+                                            },
+                                            {
+                                                icon: Zap,
+                                                title: "Real-Time Results",
+                                                desc: "Instant vote processing with cryptographic verification ensures accuracy and speed"
+                                            },
+                                            {
+                                                icon: Users,
+                                                title: "Universal Access",
+                                                desc: "Vote from any device, anywhere in the world with our responsive platform"
+                                            },
+                                            {
+                                                icon: Award,
+                                                title: "Certified Secure",
+                                                desc: "Multiple security audits and compliance with international voting standards"
+                                            }
+                                        ].map((feature, idx) => (
+                                            <motion.div
+                                                key={idx}
+                                                initial={{ opacity: 0, scale: 0.9 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                transition={{ delay: 0.4 + idx * 0.1, duration: 0.5 }}
+                                                className="p-5 rounded-xl bg-white/5 border border-white/10 hover:border-primary/50 hover:bg-white/10 transition-all duration-300 group"
+                                            >
+                                                <feature.icon className="w-8 h-8 text-primary mb-3 group-hover:scale-110 transition-transform" />
+                                                <h4 className="text-lg font-bold text-white mb-2">{feature.title}</h4>
+                                                <p className="text-sm text-gray-400 leading-relaxed">{feature.desc}</p>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+
+                                {/* How It Works */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.9, duration: 0.6 }}
+                                    className="mb-10"
+                                >
+                                    <h3 className="text-2xl font-bold mb-6 text-white">How It Works</h3>
+                                    <div className="space-y-4">
+                                        {[
+                                            {
+                                                step: "01",
+                                                title: "Citizen Verification",
+                                                desc: "Verify your identity with citizenship ID and date of birth"
+                                            },
+                                            {
+                                                step: "02",
+                                                title: "Biometric Authentication",
+                                                desc: "Upload ID photo and complete facial recognition scan with liveness detection"
+                                            },
+                                            {
+                                                step: "03",
+                                                title: "Secure Voting",
+                                                desc: "Cast your encrypted vote with full transparency and blockchain verification"
+                                            },
+                                            {
+                                                step: "04",
+                                                title: "Instant Confirmation",
+                                                desc: "Receive cryptographic proof of vote submission with real-time status updates"
+                                            }
+                                        ].map((item, idx) => (
+                                            <motion.div
+                                                key={idx}
+                                                initial={{ opacity: 0, x: -20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: 1.0 + idx * 0.1, duration: 0.6 }}
+                                                className="flex items-start gap-4 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-primary/30 transition-all"
+                                            >
+                                                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center font-bold text-white">
+                                                    {item.step}
+                                                </div>
+                                                <div>
+                                                    <h4 className="text-lg font-bold text-white mb-1">{item.title}</h4>
+                                                    <p className="text-sm text-gray-400">{item.desc}</p>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </motion.div>
+
+                                {/* Statistics */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 1.4, duration: 0.6 }}
+                                    className="grid grid-cols-3 gap-6 p-6 rounded-2xl bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/20"
+                                >
+                                    {[
+                                        { value: "99.9%", label: "Accuracy Rate" },
+                                        { value: "256-bit", label: "Encryption" },
+                                        { value: "< 1s", label: "Vote Processing" }
+                                    ].map((stat, idx) => (
+                                        <motion.div
+                                            key={idx}
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ delay: 1.5 + idx * 0.1, duration: 0.5 }}
+                                            className="text-center"
+                                        >
+                                            <div className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-2">
+                                                {stat.value}
+                                            </div>
+                                            <div className="text-sm text-gray-400 uppercase tracking-wider">{stat.label}</div>
+                                        </motion.div>
+                                    ))}
+                                </motion.div>
+
+                                {/* CTA */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 1.8, duration: 0.6 }}
+                                    className="mt-10 text-center"
+                                >
+                                    <Link
+                                        to="/verify"
+                                        onClick={() => setShowLearnMore(false)}
+                                        className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-lg hover:shadow-2xl hover:shadow-primary/50 transition-all transform hover:scale-105"
+                                    >
+                                        Get Started Now
+                                        <ArrowRight className="w-5 h-5" />
+                                    </Link>
+                                </motion.div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

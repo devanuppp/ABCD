@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import NepaliDate from 'nepali-date-converter';
 
 const CitizenForm = ({ onComplete, data, updateData }) => {
     const [errors, setErrors] = useState({});
@@ -8,16 +9,18 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
         e.preventDefault();
         const newErrors = {};
 
-        // Citizenship ID Validation
+        // Validate Citizenship ID
         if (!data.idNumber || data.idNumber.trim() === '') {
             newErrors.idNumber = 'Citizenship ID is required';
         } else if (!/^[0-9\-/]+$/.test(data.idNumber)) {
             newErrors.idNumber = 'Citizenship ID can only contain numbers, hyphens (-), and slashes (/)';
         }
 
-        // DOM Validation (Age 18+)
+        // Validate DOB (Age 18+)
         if (!data.dob) {
-            newErrors.dob = 'Date of Birth is required';
+            newErrors.dob = 'English Date (AD) is required';
+        } else if (!data.dobBS) {
+            newErrors.dobBS = 'Nepali Date (BS) is required';
         } else {
             const birthDate = new Date(data.dob);
             const today = new Date();
@@ -28,6 +31,8 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
             }
             if (age < 18) {
                 newErrors.dob = 'You must be at least 18 years old to vote';
+            } else if (age > 100) {
+                newErrors.dob = 'Age cannot exceed 100 years';
             }
         }
 
@@ -36,7 +41,6 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
             return;
         }
 
-        // Clear errors if valid
         setErrors({});
         onComplete();
     };
@@ -49,45 +53,115 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
             className="w-full max-w-md mx-auto"
         >
             <h2 className="text-3xl font-bold mb-2">Identity Verification</h2>
-            <p className="text-gray-400 mb-8">Please enter your citizenship details to proceed.</p>
+            <p className="text-gray-400 mb-8">Please enter your citizenship details and verify your phone number.</p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Citizenship ID */}
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-300">Citizenship ID Number</label>
                     <input
                         type="text"
                         value={data.idNumber}
                         onChange={(e) => {
-                            updateData({ idNumber: e.target.value });
-                            if (errors.idNumber) setErrors({ ...errors, idNumber: null });
+                            const val = e.target.value;
+                            if (/^[0-9/\-]*$/.test(val)) {
+                                updateData({ idNumber: val });
+                                if (errors.idNumber) setErrors({ ...errors, idNumber: null });
+                            }
                         }}
                         placeholder="XX-XX-XX-XXXXX"
-                        className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.idNumber ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-primary'} focus:ring-1 ${errors.idNumber ? 'focus:ring-red-500' : 'focus:ring-primary'} outline-none transition-all`}
+                        className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.idNumber
+                            ? 'border-red-500 focus:border-red-500'
+                            : 'border-white/10 focus:border-primary'
+                            } focus:ring-1 ${errors.idNumber
+                                ? 'focus:ring-red-500'
+                                : 'focus:ring-primary'
+                            } outline-none transition-all`}
                     />
                     {errors.idNumber && (
                         <p className="text-sm text-red-500 mt-1">{errors.idNumber}</p>
                     )}
                 </div>
 
-                <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-300">Date of Birth</label>
-                    <input
-                        type="date"
-                        value={data.dob}
-                        onChange={(e) => {
-                            updateData({ dob: e.target.value });
-                            if (errors.dob) setErrors({ ...errors, dob: null });
-                        }}
-                        className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.dob ? 'border-red-500 focus:border-red-500' : 'border-white/10 focus:border-primary'} focus:ring-1 ${errors.dob ? 'focus:ring-red-500' : 'focus:ring-primary'} outline-none transition-all text-white`}
-                    />
-                    {errors.dob && (
-                        <p className="text-sm text-red-500 mt-1">{errors.dob}</p>
-                    )}
+                {/* Date of Birth (AD & BS) */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-300">English Date (AD)</label>
+                        <input
+                            type="date"
+                            value={data.dob}
+                            onChange={(e) => {
+                                const adDate = e.target.value;
+                                try {
+                                    if (adDate) {
+                                        const date = new Date(adDate);
+                                        const bsDate = new NepaliDate(date).format('YYYY-MM-DD');
+                                        updateData({ dob: adDate, dobBS: bsDate });
+                                    } else {
+                                        updateData({ dob: '', dobBS: '' });
+                                    }
+                                    if (errors.dob) setErrors({ ...errors, dob: null });
+                                    if (errors.dobBS) setErrors({ ...errors, dobBS: null });
+                                } catch (err) {
+                                    console.error("AD Sync Error", err);
+                                }
+                            }}
+                            className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.dob
+                                ? 'border-red-500 focus:border-red-500'
+                                : 'border-white/10 focus:border-primary'
+                                } focus:ring-1 ${errors.dob
+                                    ? 'focus:ring-red-500'
+                                    : 'focus:ring-primary'
+                                } outline-none transition-all text-white`}
+                        />
+                        {errors.dob && (
+                            <p className="text-sm text-red-500 mt-1">{errors.dob}</p>
+                        )}
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-300">Nepali Date (BS)</label>
+                        <input
+                            type="text"
+                            value={data.dobBS || ''}
+                            onChange={(e) => {
+                                const bsDate = e.target.value;
+                                updateData({ ...data, dobBS: bsDate }); // Allow typing freely
+
+                                // Attempt sync if format roughly matches YYYY-MM-DD
+                                if (/^\d{4}-\d{2}-\d{2}$/.test(bsDate)) {
+                                    try {
+                                        const adDate = new NepaliDate(bsDate).toJsDate();
+                                        const adDateStr = adDate.toISOString().split('T')[0];
+                                        updateData({ dob: adDateStr, dobBS: bsDate });
+                                        if (errors.dob) setErrors({ ...errors, dob: null });
+                                    } catch (err) {
+                                        // Invalid BS date, ignore sync
+                                    }
+                                }
+                                if (errors.dobBS) setErrors({ ...errors, dobBS: null });
+                            }}
+                            placeholder="YYYY-MM-DD"
+                            className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.dobBS
+                                ? 'border-red-500 focus:border-red-500'
+                                : 'border-white/10 focus:border-primary'
+                                } focus:ring-1 ${errors.dobBS
+                                    ? 'focus:ring-red-500'
+                                    : 'focus:ring-primary'
+                                } outline-none transition-all text-white`}
+                        />
+                        {errors.dobBS && (
+                            <p className="text-sm text-red-500 mt-1">{errors.dobBS}</p>
+                        )}
+                    </div>
                 </div>
 
+
+
+                {/* Continue Button */}
                 <button
                     type="submit"
-                    className="w-full py-4 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition-colors mt-4"
+                    className="w-full py-4 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition-all hover:shadow-lg hover:shadow-primary/50"
                 >
                     Continue
                 </button>

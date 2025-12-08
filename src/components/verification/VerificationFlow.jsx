@@ -11,8 +11,11 @@ const VerificationFlow = () => {
     const [data, setData] = useState({
         idNumber: '',
         dob: '',
+        dobBS: '',
         idFront: null,
-        idBack: null
+        idBack: null,
+        phoneNumber: '',
+        otpVerified: false
     });
 
     const updateData = (newData) => {
@@ -21,11 +24,33 @@ const VerificationFlow = () => {
 
     const nextStep = () => setStep(s => s + 1);
 
-    const handleComplete = () => {
-        // In a real app, we would verify everything one last time here
-        // For now, we set a flag in localStorage to simulate session
-        localStorage.setItem('isVerified', 'true');
-        navigate('/vote');
+    const handleComplete = async () => {
+        try {
+            const formData = new FormData();
+            formData.append('idNumber', data.idNumber);
+            formData.append('dob', data.dob);
+            formData.append('dobBS', data.dobBS);
+            if (data.idFront) formData.append('idFront', data.idFront);
+            if (data.idBack) formData.append('idBack', data.idBack);
+
+            const response = await fetch('http://localhost:3000/api/register', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log("Registration Success:", result);
+                localStorage.setItem('isVerified', 'true');
+                navigate('/vote');
+            } else {
+                console.error("Registration Failed");
+                alert("Registration Failed. Please try again.");
+            }
+        } catch (error) {
+            console.error("Network Error:", error);
+            alert("Network Error. Ensure backend is running.");
+        }
     };
 
     return (

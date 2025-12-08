@@ -3,9 +3,22 @@ import { motion } from 'framer-motion';
 import { CheckCircle, User } from 'lucide-react';
 
 const candidates = [
-    { id: 1, name: "Sarah Connor", party: "Future Party", color: "from-blue-500 to-cyan-500" },
-    { id: 2, name: "John Doe", party: "People's Alliance", color: "from-purple-500 to-pink-500" },
-    { id: 3, name: "Jane Smith", party: "Green Initiative", color: "from-green-500 to-emerald-500" },
+    {
+        id: 1,
+        name: "EZRA DANGOL",
+        party: "Class Representative",
+        address: "Kathmandu, Nepal",
+        image: "/ezra_dangol.jpg",
+        color: "from-blue-500 to-cyan-500"
+    },
+    {
+        id: 2,
+        name: "SATTEN SHERPA",
+        party: "Class Representative",
+        address: "Kathmandu, Nepal",
+        image: "/satten_sherpa.png",
+        color: "from-purple-500 to-pink-500"
+    },
 ];
 
 const VotingDashboard = () => {
@@ -46,32 +59,42 @@ const VotingDashboard = () => {
                 <p className="text-gray-400">Select your preferred candidate below. This action cannot be undone.</p>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                {candidates.map((candidate) => (
-                    <motion.div
-                        key={candidate.id}
-                        whileHover={{ y: -5 }}
-                        onClick={() => setSelected(candidate.id)}
-                        className={`cursor-pointer relative p-6 rounded-2xl border-2 transition-all overflow-hidden
-              ${selected === candidate.id ? 'border-primary bg-white/5 shadow-[0_0_20px_rgba(0,242,255,0.2)]' : 'border-white/10 hover:border-white/30 bg-glass'}
-            `}
-                    >
-                        <div className={`absolute top-0 left-0 w-full h-2 bg-gradient-to-r ${candidate.color}`} />
+            <div className="mb-12">
+                <h2 className="text-2xl font-bold mb-6 pl-4 border-l-4 border-primary">Class Representative Election</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {candidates.map((candidate) => (
+                        <motion.div
+                            key={candidate.id}
+                            whileHover={{ y: -5 }}
+                            onClick={() => setSelected(candidate.id)}
+                            className={`cursor-pointer relative p-6 rounded-2xl border-2 transition-all overflow-hidden
+               ${selected === candidate.id ? 'border-primary bg-white/5 shadow-[0_0_20px_rgba(0,242,255,0.2)]' : 'border-white/10 hover:border-white/30 bg-glass'}
+             `}
+                        >
+                            <div className={`absolute top-0 left-0 w-full h-2 bg-gradient-to-r ${candidate.color}`} />
 
-                        <div className="w-20 h-20 rounded-full bg-white/10 mx-auto mb-4 flex items-center justify-center">
-                            <User className="w-10 h-10 text-gray-400" />
-                        </div>
+                            <div className="w-20 h-20 rounded-full bg-white/10 mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                                {candidate.image ? (
+                                    <img src={candidate.image} alt={candidate.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    <User className="w-10 h-10 text-gray-400" />
+                                )}
+                            </div>
 
-                        <h3 className="text-xl font-bold text-center mb-1">{candidate.name}</h3>
-                        <p className="text-sm text-gray-400 text-center mb-4">{candidate.party}</p>
+                            <h3 className="text-xl font-bold text-center mb-1">{candidate.name}</h3>
+                            <p className="text-sm text-gray-400 text-center mb-1">{candidate.party}</p>
+                            {candidate.address && (
+                                <p className="text-xs text-gray-500 text-center mb-4">{candidate.address}</p>
+                            )}
 
-                        <div className={`w-6 h-6 rounded-full border-2 mx-auto flex items-center justify-center
-              ${selected === candidate.id ? 'border-primary bg-primary' : 'border-gray-500'}
-            `}>
-                            {selected === candidate.id && <CheckCircle className="w-4 h-4 text-black" />}
-                        </div>
-                    </motion.div>
-                ))}
+                            <div className={`w-6 h-6 rounded-full border-2 mx-auto flex items-center justify-center
+               ${selected === candidate.id ? 'border-primary bg-primary' : 'border-gray-500'}
+             `}>
+                                {selected === candidate.id && <CheckCircle className="w-4 h-4 text-black" />}
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
             </div>
 
             <div className="flex justify-center">

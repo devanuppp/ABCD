@@ -8,27 +8,34 @@ const UploadBox = ({ label, file, onUpload }) => {
     const handleDrop = (e) => {
         e.preventDefault();
         setIsDragging(false);
-        // Simulate file drop
-        onUpload("dummy_file.jpg");
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            onUpload(e.dataTransfer.files[0]);
+        }
+    };
+
+    const handleChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            onUpload(e.target.files[0]);
+        }
     };
 
     return (
-        <div
+        <label
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
-            onClick={() => onUpload("dummy_file.jpg")}
             className={`relative h-40 rounded-xl border-2 border-dashed transition-all cursor-pointer flex flex-col items-center justify-center gap-2
         ${isDragging ? 'border-primary bg-primary/10' : 'border-white/10 hover:border-white/30 hover:bg-white/5'}
         ${file ? 'border-green-500/50 bg-green-500/10' : ''}
       `}
         >
+            <input type="file" className="hidden" accept="image/*" onChange={handleChange} />
             {file ? (
                 <>
                     <div className="p-2 rounded-full bg-green-500/20 text-green-500">
                         <Check className="w-6 h-6" />
                     </div>
-                    <span className="text-sm text-green-400 font-medium">Uploaded Successfully</span>
+                    <span className="text-sm text-green-400 font-medium">Uploaded: {file.name}</span>
                 </>
             ) : (
                 <>
@@ -39,7 +46,7 @@ const UploadBox = ({ label, file, onUpload }) => {
                     <span className="text-xs text-gray-500">Drag & drop or click to upload</span>
                 </>
             )}
-        </div>
+        </label>
     );
 };
 
