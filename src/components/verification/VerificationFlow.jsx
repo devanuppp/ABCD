@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import CitizenForm from './CitizenForm';
 import IdUpload from './IdUpload';
 import FaceAuth from './FaceAuth';
+import { API_BASE_URL } from '../../config';
 
 const VerificationFlow = () => {
     const navigate = useNavigate();
@@ -36,7 +37,7 @@ const VerificationFlow = () => {
             if (data.idBack) formData.append('idBack', data.idBack);
             if (faceBlob) formData.append('faceImage', faceBlob, 'face.jpg');
 
-            const response = await fetch('http://localhost:3000/api/verify', {
+            const response = await fetch(`${API_BASE_URL}/api/verify`, {
                 method: 'POST',
                 body: formData
             });

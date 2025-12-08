@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import NepaliDate from 'nepali-date-converter';
+import { API_BASE_URL } from '../../config';
 
 const CitizenForm = ({ onComplete, data, updateData }) => {
     const [errors, setErrors] = useState({});
@@ -48,7 +49,7 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
 
         // Backend Verification
         try {
-            const response = await fetch('http://localhost:3000/api/verify-citizen', {
+            const response = await fetch(`${API_BASE_URL}/api/verify-citizen`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -105,10 +106,10 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
                         placeholder="XX-XX-XX-XXXXX"
                         className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${errors.idNumber
                             ? 'border-red-500 focus:border-red-500'
-                            : 'border-white/10 focus:border-emerald-500' // Changed focus color
+                            : 'border-white/10 focus:border-emerald-500'
                             } focus:ring-1 ${errors.idNumber
                                 ? 'focus:ring-red-500'
-                                : 'focus:ring-emerald-500' // Changed focus color
+                                : 'focus:ring-emerald-500'
                             } outline-none transition-all`}
                     />
                     {errors.idNumber && (
