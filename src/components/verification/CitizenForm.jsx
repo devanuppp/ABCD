@@ -51,7 +51,10 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/verify-citizen`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Bypass-Tunnel-Reminder': 'true'
+                },
                 body: JSON.stringify({
                     idNumber: data.idNumber,
                     dob: data.dob,

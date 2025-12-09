@@ -39,6 +39,9 @@ const VerificationFlow = () => {
 
             const response = await fetch(`${API_BASE_URL}/api/verify`, {
                 method: 'POST',
+                headers: {
+                    'Bypass-Tunnel-Reminder': 'true'
+                },
                 body: formData
             });
 

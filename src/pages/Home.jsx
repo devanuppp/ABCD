@@ -74,7 +74,7 @@ const Home = () => {
 
                 <h1 className="text-6xl md:text-8xl font-bold tracking-tight">
                     The Future of <br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary text-glow">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 text-glow">
                         Democracy
                     </span>
                 </h1>
