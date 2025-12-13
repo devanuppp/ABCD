@@ -159,7 +159,8 @@ const CitizenForm = ({ onComplete, data, updateData }) => {
                                 const adDate = e.target.value;
                                 try {
                                     if (adDate) {
-                                        const date = new Date(adDate);
+                                        const [y, m, d] = adDate.split('-').map(Number);
+                                        const date = new Date(y, m - 1, d);
                                         const bsDate = new NepaliDate(date).format('YYYY-MM-DD');
                                         updateData({ dob: adDate, dobBS: bsDate });
                                     } else {
